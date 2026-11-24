@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Send, Save, Sparkles, Trash2 } from "lucide-react";
 import { updatePost, deletePost } from "@/actions/post.actions";
 import { generateSummary } from "@/actions/ai.actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import {
   Dialog,
   DialogContent,
@@ -98,7 +99,8 @@ export default function EditPage() {
         if (result && "error" in result) {
           toast.error(result.error);
         }
-      } catch {
+      } catch (err) {
+        if (isRedirectError(err)) throw err;
         toast.error("Failed to publish post");
       }
     });
@@ -117,7 +119,8 @@ export default function EditPage() {
         if (result && "error" in result) {
           toast.error(result.error);
         }
-      } catch {
+      } catch (err) {
+        if (isRedirectError(err)) throw err;
         toast.error("Failed to save draft");
       }
     });

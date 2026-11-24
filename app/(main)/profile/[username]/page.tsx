@@ -30,10 +30,6 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   };
 }
 
-/**
- * User profile page — shows user info, stats, follow button, and posts.
- * Tabs: Published posts and Liked posts.
- */
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const session = await auth();
   const { username } = await params;
@@ -89,74 +85,70 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }));
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <div className="pb-16">
       {/* Profile header */}
-      <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
-        <UserAvatar name={user.name} image={user.image} className="h-20 w-20 sm:h-24 sm:w-24 text-2xl" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <div>
-              <h1 className="text-2xl font-bold">{user.name}</h1>
-              <p className="text-muted-foreground">@{user.username}</p>
+      <div className="border-b border-white/5 pb-7 mb-7">
+        <div className="flex items-start gap-5">
+          <UserAvatar name={user.name} image={user.image} className="h-16 w-16 sm:h-20 sm:w-20 text-2xl shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3 mb-1">
+              <div>
+                <h1 className="text-xl font-bold text-[#efefef] tracking-tight">{user.name}</h1>
+                <p className="text-sm text-[#555]">@{user.username}</p>
+              </div>
+              {isOwnProfile ? (
+                <Link href="/settings">
+                  <button className="text-xs text-[#666] hover:text-[#ccc] transition-colors border border-white/8 hover:border-white/15 rounded px-3 py-1.5 cursor-pointer">
+                    Edit profile
+                  </button>
+                </Link>
+              ) : session?.user?.id ? (
+                <FollowButton targetUserId={user.id} isFollowing={isFollowing} />
+              ) : null}
             </div>
-            {isOwnProfile ? (
-              <Link href="/settings">
-                <button className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border/60 rounded-lg px-3 py-1.5">
-                  Edit profile
-                </button>
-              </Link>
-            ) : session?.user?.id ? (
-              <FollowButton targetUserId={user.id} isFollowing={isFollowing} />
-            ) : null}
+            {user.bio && (
+              <p className="text-sm text-[#777] leading-relaxed mt-2 max-w-sm">{user.bio}</p>
+            )}
+            <div className="mt-4">
+              <ProfileStats
+                postCount={user._count.posts}
+                followerCount={user._count.followers}
+                followingCount={user._count.following}
+              />
+            </div>
           </div>
-          {user.bio && (
-            <p className="text-sm text-muted-foreground mb-4 max-w-md">{user.bio}</p>
-          )}
-          {user.interests && user.interests.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {user.interests.map((interest) => (
-                <span
-                  key={interest}
-                  className="inline-flex items-center rounded-full bg-primary/5 px-2.5 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/10"
-                >
-                  {interest}
-                </span>
-              ))}
-            </div>
-          )}
-          <ProfileStats
-            postCount={user._count.posts}
-            followerCount={user._count.followers}
-            followingCount={user._count.following}
-          />
         </div>
       </div>
 
       {/* Posts */}
       <Tabs defaultValue="posts">
-        <TabsList className="w-full sm:w-auto mb-6">
-          <TabsTrigger value="posts" className="flex-1 sm:flex-initial">
-            Posts ({shapedPosts.length})
+        <TabsList className="bg-transparent border-b border-white/5 w-full justify-start rounded-none p-0 mb-5 h-auto">
+          <TabsTrigger
+            value="posts"
+            className="text-xs font-semibold uppercase tracking-widest pb-3 pt-1 px-4 rounded-none data-[state=active]:text-[#E8C97A] data-[state=active]:shadow-none data-[state=active]:border-b-[1px] data-[state=active]:border-[#E8C97A] text-[#444] bg-transparent hover:text-[#888] transition-colors"
+          >
+            Posts
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="posts">
+
+        <TabsContent value="posts" className="mt-0">
           {shapedPosts.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-muted-foreground">
+            <div className="py-16 text-center">
+              <p className="text-sm text-[#444]">
                 {isOwnProfile
                   ? "You haven't published any posts yet."
                   : "This user hasn't published any posts yet."}
               </p>
               {isOwnProfile && (
                 <Link href="/write">
-                  <button className="mt-4 text-primary hover:underline">
+                  <button className="mt-4 text-xs text-[#E8C97A] hover:underline cursor-pointer">
                     Write your first post →
                   </button>
                 </Link>
               )}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div>
               {shapedPosts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}

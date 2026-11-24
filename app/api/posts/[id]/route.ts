@@ -38,6 +38,9 @@ export async function GET(
         likes: session?.user?.id
           ? { where: { userId: session.user.id }, select: { id: true } }
           : false,
+        bookmarks: session?.user?.id
+          ? { where: { userId: session.user.id }, select: { id: true } }
+          : false,
         _count: { select: { likes: true } },
       },
     });
@@ -70,6 +73,7 @@ export async function GET(
       published: post.published,
       likeCount: post._count.likes,
       isLikedByCurrentUser: Array.isArray(post.likes) ? post.likes.length > 0 : false,
+      isBookmarkedByCurrentUser: Array.isArray(post.bookmarks) ? post.bookmarks.length > 0 : false,
       author: {
         id: post.author.id,
         name: post.author.name,

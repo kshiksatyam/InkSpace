@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "@/components/user/UserAvatar";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Send } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -16,10 +14,6 @@ interface CommentSectionProps {
   postId: string;
 }
 
-/**
- * Comment section with list + add form.
- * Fetches comments client-side and allows posting new ones.
- */
 export function CommentSection({ postId }: CommentSectionProps) {
   const { data: session } = useSession();
   const [comments, setComments] = useState<CommentData[]>([]);
@@ -66,75 +60,75 @@ export function CommentSection({ postId }: CommentSectionProps) {
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-6">
-        Comments ({comments.length})
+      <h2 className="text-sm font-semibold text-[#aaa] uppercase tracking-widest mb-5">
+        Comments {comments.length > 0 && `(${comments.length})`}
       </h2>
 
-      {/* Add comment form */}
+      {/* Add comment */}
       {session?.user ? (
-        <form onSubmit={handleSubmit} className="mb-8 space-y-3">
-          <Textarea
-            placeholder="Write a comment..."
+        <form onSubmit={handleSubmit} className="mb-8">
+          <textarea
+            placeholder="Add a comment..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={3}
-            className="resize-none"
+            className="w-full bg-[#131313] border border-white/7 hover:border-white/12 focus:border-[#E8C97A]/30 focus:ring-1 focus:ring-[#E8C97A]/15 text-[#ddd] rounded-sm px-4 py-3 text-sm placeholder-[#444] outline-none transition-all resize-none"
           />
-          <div className="flex justify-end">
-            <Button type="submit" size="sm" disabled={isSubmitting || !text.trim()} className="gap-1.5">
-              {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-              Post comment
-            </Button>
+          <div className="flex justify-end mt-2">
+            <button
+              type="submit"
+              disabled={isSubmitting || !text.trim()}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[#E8C97A] hover:bg-[#dabb65] text-[#0c0c0c] px-4 py-2 rounded transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3 w-3" />}
+              Post
+            </button>
           </div>
         </form>
       ) : (
-        <p className="text-sm text-muted-foreground mb-6">
-          <Link href="/login" className="text-primary hover:underline">Sign in</Link> to leave a comment.
+        <p className="text-sm text-[#555] mb-6">
+          <Link href="/login" className="text-[#E8C97A] hover:underline">Sign in</Link>{" "}
+          to leave a comment.
         </p>
       )}
 
-      {/* Comments list */}
+      {/* Comment list */}
       {isLoading ? (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex gap-3">
-              <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+              <Skeleton className="h-7 w-7 rounded-sm shrink-0 bg-white/5" />
               <div className="space-y-1.5 flex-1">
-                <Skeleton className="h-3.5 w-28" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-24 bg-white/5" />
+                <Skeleton className="h-3.5 w-full bg-white/5" />
               </div>
             </div>
           ))}
         </div>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No comments yet. Be the first!
-        </p>
+        <p className="text-sm text-[#444] py-6">No comments yet. Be the first!</p>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-5 divide-y divide-white/5">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3">
+            <div key={comment.id} className="flex gap-3 pt-5 first:pt-0">
               <Link href={`/profile/${comment.author.username}`} className="shrink-0">
                 <UserAvatar
                   name={comment.author.name}
                   image={comment.author.image}
-                  className="h-8 w-8"
+                  className="h-7 w-7"
                 />
               </Link>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
+                <div className="flex items-center gap-2 mb-1">
                   <Link
                     href={`/profile/${comment.author.username}`}
-                    className="text-sm font-medium hover:text-primary transition-colors"
+                    className="text-xs font-semibold text-[#aaa] hover:text-white transition-colors"
                   >
                     {comment.author.name}
                   </Link>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(comment.createdAt)}
-                  </span>
+                  <span className="text-[11px] text-[#444]">{formatDate(comment.createdAt)}</span>
                 </div>
-                <p className="text-sm leading-relaxed">{comment.text}</p>
+                <p className="text-sm text-[#888] leading-relaxed">{comment.text}</p>
               </div>
             </div>
           ))}

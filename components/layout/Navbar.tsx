@@ -14,6 +14,7 @@ import {
 import { UserAvatar } from "@/components/user/UserAvatar";
 import { SearchInput } from "./SearchInput";
 import type { SessionUser } from "@/types";
+import { useAuthModal } from "@/components/providers/AuthModalProvider";
 
 /**
  * Main navigation bar displayed on all (main) layout pages.
@@ -23,6 +24,7 @@ import type { SessionUser } from "@/types";
 export function Navbar() {
   const { data: session } = useSession();
   const user = session?.user as SessionUser | undefined;
+  const { openModal } = useAuthModal();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -92,12 +94,8 @@ export function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Sign in</Button>
-              </Link>
-              <Link href="/register">
-                <Button size="sm">Get started</Button>
-              </Link>
+              <Button variant="ghost" size="sm" onClick={() => openModal("login")}>Sign in</Button>
+              <Button size="sm" onClick={() => openModal("register")}>Get started</Button>
             </div>
           )}
         </div>

@@ -11,10 +11,6 @@ interface LikeButtonProps {
   initialCount: number;
 }
 
-/**
- * Optimistic like/unlike button with heart icon and count.
- * Instantly toggles the UI, then confirms with the server action.
- */
 export function LikeButton({
   postId,
   initialLiked,
@@ -25,14 +21,12 @@ export function LikeButton({
   const [isPending, startTransition] = useTransition();
 
   function handleClick() {
-    // Optimistic update
     setLiked((prev) => !prev);
     setCount((prev) => (liked ? prev - 1 : prev + 1));
 
     startTransition(async () => {
       const result = await toggleLike(postId);
       if ("error" in result) {
-        // Revert on error
         setLiked((prev) => !prev);
         setCount((prev) => (liked ? prev + 1 : prev - 1));
       } else {
@@ -47,10 +41,10 @@ export function LikeButton({
       onClick={handleClick}
       disabled={isPending}
       className={cn(
-        "group flex items-center gap-1.5 text-sm transition-colors",
+        "group flex items-center gap-1.5 text-sm transition-colors cursor-pointer",
         liked
-          ? "text-rose-500"
-          : "text-muted-foreground hover:text-rose-500"
+          ? "text-[#E8C97A]"
+          : "text-[#555] hover:text-[#E8C97A]"
       )}
       aria-label={liked ? "Unlike post" : "Like post"}
     >
@@ -60,11 +54,11 @@ export function LikeButton({
         <Heart
           className={cn(
             "h-4 w-4 transition-all",
-            liked && "fill-current scale-110"
+            liked && "fill-current"
           )}
         />
       )}
-      <span className="tabular-nums">{count}</span>
+      <span className="tabular-nums text-xs">{count}</span>
     </button>
   );
 }

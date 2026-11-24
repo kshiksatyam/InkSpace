@@ -16,14 +16,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   if (!query) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold mb-2">Search InkSpace</h1>
-        <p className="text-muted-foreground">Enter a search term to find posts, people, or tags.</p>
+      <div className="py-16 text-center">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#444] font-semibold mb-3">
+          Search
+        </p>
+        <h1 className="text-2xl font-bold text-[#efefef] tracking-tight mb-2">Find anything</h1>
+        <p className="text-sm text-[#555]">Search for posts, people, or topics.</p>
       </div>
     );
   }
 
-  // Search for posts (title, tags, or content) and users (name, username)
   const [posts, users] = await Promise.all([
     prisma.post.findMany({
       where: {
@@ -75,27 +77,33 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }));
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-bold mb-8">
-        Search results for "{query}"
-      </h1>
+    <div className="pb-16">
+      <div className="mb-7 border-b border-white/5 pb-5">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#444] font-semibold mb-1">
+          Search results
+        </p>
+        <h1 className="text-xl font-bold text-[#efefef] tracking-tight">
+          &ldquo;{query}&rdquo;
+        </h1>
+      </div>
 
+      {/* People */}
       {users.length > 0 && (
-        <div className="mb-12">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">People</h2>
-          <div className="space-y-4">
+        <div className="mb-10">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-[#444] font-semibold mb-4">
+            People
+          </p>
+          <div className="space-y-1 divide-y divide-white/5">
             {users.map((user) => (
               <Link
                 key={user.id}
                 href={`/profile/${user.username}`}
-                className="flex items-center justify-between p-4 rounded-xl border border-border/60 hover:bg-muted/30 transition-colors"
+                className="flex items-center gap-3 py-3 group"
               >
-                <div className="flex items-center gap-3">
-                  <UserAvatar name={user.name} image={user.image} />
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">@{user.username}</p>
-                  </div>
+                <UserAvatar name={user.name} image={user.image} className="h-8 w-8 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-[#aaa] group-hover:text-white transition-colors">{user.name}</p>
+                  <p className="text-xs text-[#444]">@{user.username}</p>
                 </div>
               </Link>
             ))}
@@ -103,12 +111,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         </div>
       )}
 
+      {/* Posts */}
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Posts</h2>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-[#444] font-semibold mb-4">
+          Posts
+        </p>
         {shapedPosts.length === 0 ? (
-          <p className="text-muted-foreground py-8">No posts found matching your search.</p>
+          <p className="text-sm text-[#444] py-8">No posts found for &ldquo;{query}&rdquo;.</p>
         ) : (
-          <div className="space-y-4">
+          <div>
             {shapedPosts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}

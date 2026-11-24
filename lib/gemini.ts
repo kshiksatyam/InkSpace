@@ -1,23 +1,23 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { stripHtml } from "@/lib/utils";
 
 /**
  * Lazy-initialized Gemini client — only created when first called.
  * This avoids errors if GEMINI_API_KEY is not set during build time.
  */
-let geminiClient: GoogleGenerativeAI | null = null;
+let geminiClient: GoogleGenAI | null = null;
 
 /**
  * Returns the initialized Gemini client, creating it on first call.
  * @throws Error if GEMINI_API_KEY is not set in environment
  */
-function getGeminiClient(): GoogleGenerativeAI {
+function getGeminiClient(): GoogleGenAI {
   if (!geminiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY environment variable is not set");
     }
-    geminiClient = new GoogleGenerativeAI(apiKey);
+    geminiClient = new GoogleGenAI({ apiKey });
   }
   return geminiClient;
 }
@@ -39,20 +39,23 @@ export async function generatePostSummary(content: string): Promise<string> {
   // Strip HTML tags before sending — the model doesn't need markup context
   const plainTextContent = stripHtml(content);
 
-  const model = client.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction: `You are an editorial assistant for a blogging platform.
+  const systemInstruction = `You are an editorial assistant for a blogging platform.
 A user has written a blog post. Your job is to write a summary
 of exactly 2 sentences. The summary must be clear, engaging,
 and readable by a general audience. Do not use phrases like
 "This post is about" or "The author discusses". Write the
 summary as if you are describing the post to a friend.
-Return ONLY the 2-sentence summary. Nothing else.`,
+Return ONLY the 2-sentence summary. Nothing else.`;
+
+  const response = await client.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: plainTextContent,
+    config: {
+      systemInstruction,
+    },
   });
 
-  const result = await model.generateContent(plainTextContent);
-  const response = result.response;
-  const summaryText = response.text();
+  const summaryText = response.text;
 
   if (!summaryText) {
     throw new Error("Gemini returned an empty response");

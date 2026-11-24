@@ -23,6 +23,7 @@ export interface PostCard {
   createdAt: string;
   likeCount: number;
   isLikedByCurrentUser: boolean;
+  isBookmarkedByCurrentUser?: boolean;
   author: UserBasic;
 }
 

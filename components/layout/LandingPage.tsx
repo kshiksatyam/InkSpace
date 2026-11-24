@@ -1,448 +1,318 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, PenLine, Sparkles, Globe, Users, TrendingUp, ArrowRight, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useEffect, useRef } from "react";
+import { PenLine, Sparkles, Globe, Users, TrendingUp, Star, ArrowUpRight } from "lucide-react";
+import { useAuthModal } from "@/components/providers/AuthModalProvider";
 
 const FEATURES = [
   {
     icon: PenLine,
-    title: "Write Beautifully",
+    title: "Distraction-free writing",
     description:
-      "A distraction-free rich-text editor that lets your ideas shine. Format with ease, focus on writing.",
+      "A minimal rich-text editor built for flow state. Format as you write, focus on what matters.",
   },
   {
     icon: Sparkles,
-    title: "AI-Powered Summaries",
+    title: "AI-powered summaries",
     description:
-      "Let AI generate smart summaries of your posts so readers can preview your ideas at a glance.",
+      "Generate crisp article previews with one click — so readers know exactly what they're getting.",
   },
   {
     icon: Globe,
-    title: "Reach the World",
+    title: "Global discovery",
     description:
-      "Publish your stories and have them discovered by readers globally through tags and search.",
+      "Tagged posts surface through search and trending topics, reaching readers who care.",
   },
   {
     icon: Users,
-    title: "Build Your Audience",
+    title: "Real community",
     description:
-      "Follow writers, get followers, and build a community around the topics you love.",
+      "Follow writers, collect followers, and build a readership around your ideas over time.",
   },
   {
     icon: TrendingUp,
-    title: "Trending Tags",
+    title: "Live trending",
     description:
-      "Stay on top of what's trending. Discover popular topics and growing conversations in real time.",
+      "Watch topics rise in real time. Jump into conversations while they're still forming.",
   },
   {
     icon: Star,
-    title: "Curated For You",
+    title: "Personalised feed",
     description:
-      "A personalised feed that surfaces stories from writers you follow alongside fresh discoveries.",
+      "Surfaces posts from writers you follow, blended with fresh discoveries curated for you.",
   },
+];
+
+const STATS = [
+  { value: "12k+", label: "Writers" },
+  { value: "48k+", label: "Stories" },
+  { value: "200k+", label: "Readers" },
 ];
 
 const TESTIMONIALS = [
   {
     quote: "InkSpace gave me the audience I always dreamed of. The editor is a joy to write in.",
     author: "Priya S.",
-    role: "Tech Blogger",
+    role: "Tech blogger",
     initials: "PS",
   },
   {
     quote: "Finally a blogging platform that feels modern and minimal. I write every day now.",
     author: "Marcus T.",
-    role: "Fiction Writer",
+    role: "Fiction writer",
     initials: "MT",
   },
   {
     quote: "The AI summary feature saves me hours every week. My readers love the previews.",
     author: "Aiko W.",
-    role: "Content Creator",
+    role: "Content creator",
     initials: "AW",
   },
 ];
 
-/** Animated floating ink-drop blobs for the hero background */
-function HeroBg() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      {/* Large ambient blobs */}
-      <div
-        className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-[0.06] blur-3xl"
-        style={{ background: "radial-gradient(circle, hsl(220 70% 60%), transparent 70%)" }}
-      />
-      <div
-        className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full opacity-[0.07] blur-3xl"
-        style={{ background: "radial-gradient(circle, hsl(280 60% 60%), transparent 70%)" }}
-      />
-      <div
-        className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full opacity-[0.05] blur-3xl"
-        style={{ background: "radial-gradient(circle, hsl(340 70% 60%), transparent 70%)" }}
-      />
-
-      {/* Subtle dot grid */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, currentColor 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-    </div>
-  );
-}
-
-/** Animated word cycling in the hero headline */
-function CyclingWord({ words }: { words: string[] }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    let idx = 0;
-    const tick = () => {
-      if (!ref.current) return;
-      ref.current.style.opacity = "0";
-      ref.current.style.transform = "translateY(-8px)";
-      setTimeout(() => {
-        idx = (idx + 1) % words.length;
-        if (ref.current) {
-          ref.current.textContent = words[idx];
-          ref.current.style.opacity = "1";
-          ref.current.style.transform = "translateY(0)";
-        }
-      }, 300);
-    };
-    const id = setInterval(tick, 2400);
-    return () => clearInterval(id);
-  }, [words]);
-
-  return (
-    <span
-      ref={ref}
-      className="inline-block transition-all duration-300 ease-out bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
-    >
-      {words[0]}
-    </span>
-  );
-}
-
 export function LandingPage() {
+  const { openModal } = useAuthModal();
+
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
-      {/* ── Hero ── */}
-      <section className="relative flex flex-col items-center justify-center min-h-[92vh] text-center px-4 pt-24 pb-16">
-        <HeroBg />
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-[#0c0c0c] text-[#efefef]">
 
-        {/* Badge */}
-        <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/50 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
-          <Sparkles className="h-3.5 w-3.5 text-violet-500" />
-          <span>Now with AI-powered writing tools</span>
-          <ArrowRight className="h-3.5 w-3.5" />
+      {/* ── Minimal nav bar ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0c0c0c]/90 backdrop-blur-md">
+        <div className="flex items-center gap-2">
+          <span className="text-[#E8C97A] font-bold tracking-tight text-lg">Ink</span>
+          <span className="text-white font-bold tracking-tight text-lg">Space</span>
         </div>
-
-        {/* Headline */}
-        <h1 className="relative max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">
-          The place where{" "}
-          <CyclingWord
-            words={["ideas", "stories", "knowledge", "voices"]}
-          />{" "}
-          <br className="hidden sm:block" />
-          come to life.
-        </h1>
-
-        {/* Sub-headline */}
-        <p className="relative mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
-          InkSpace is a modern blogging platform built for writers who care
-          about their craft. Write, share, and grow your audience — all in one
-          beautiful space.
-        </p>
-
-        {/* CTAs */}
-        <div className="relative mt-10 flex flex-col sm:flex-row items-center gap-4">
-          <Link href="/register">
-            <Button
-              size="lg"
-              className="h-12 px-8 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.03]"
-            >
-              Start writing for free
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-12 px-8 text-base font-semibold hover:scale-[1.03] transition-all"
-            >
-              Sign in
-            </Button>
-          </Link>
-        </div>
-
-        {/* Social proof micro-stats */}
-        <div className="relative mt-14 flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
-          {[
-            ["✍️", "Writers worldwide"],
-            ["📖", "Stories published"],
-            ["🌟", "Free forever"],
-          ].map(([emoji, label]) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span>{emoji}</span>
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Mock preview card */}
-        <div className="relative mt-16 w-full max-w-3xl mx-auto">
-          <div
-            className="rounded-2xl border border-border/50 bg-card/70 backdrop-blur-md shadow-2xl overflow-hidden"
-            style={{ boxShadow: "0 32px 80px -12px rgba(0,0,0,0.15)" }}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => openModal("login")}
+            className="text-sm text-[#aaa] hover:text-white transition-colors px-3 py-1.5 cursor-pointer"
           >
-            {/* Window chrome */}
-            <div className="flex items-center gap-2 border-b border-border/40 bg-muted/30 px-4 py-3">
-              <span className="h-3 w-3 rounded-full bg-red-400/70" />
-              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
-              <span className="h-3 w-3 rounded-full bg-green-400/70" />
-              <span className="ml-3 flex-1 text-xs text-muted-foreground text-center">
-                inkspace.app
-              </span>
+            Sign in
+          </button>
+          <button
+            onClick={() => openModal("register")}
+            className="text-sm bg-[#E8C97A] hover:bg-[#dabb65] text-[#0c0c0c] font-semibold px-4 py-1.5 rounded transition-colors cursor-pointer"
+          >
+            Get started
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Hero ── */}
+      <section className="relative pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto w-full">
+        {/* Ruled background texture */}
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(255,255,255,1) 31px, rgba(255,255,255,1) 32px)",
+          }}
+        />
+
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-16 items-start">
+          {/* Left: editorial headline */}
+          <div>
+            {/* Issue badge — editorial newspaper style */}
+            <div className="inline-flex items-center gap-2 mb-10 text-xs uppercase tracking-[0.15em] text-[#E8C97A] font-semibold">
+              <span className="w-4 h-px bg-[#E8C97A]" />
+              The writer&apos;s platform
+              <span className="w-4 h-px bg-[#E8C97A]" />
             </div>
 
-            {/* Fake feed preview */}
-            <div className="p-6 space-y-4 text-left">
-              {[
-                {
-                  title: "The Future of AI-Powered Writing",
-                  excerpt:
-                    "AI tools are transforming how we create content. With tools like InkSpace, writers can focus on their ideas while AI handles summaries and organisation.",
-                  tag: "#ai",
-                  author: "Kaushik",
-                  time: "2 min read",
-                },
-                {
-                  title: "Why Minimalism Makes Better Writers",
-                  excerpt:
-                    "Distraction-free writing environments push us to think more deeply. Here's how stripping away the noise helps your best ideas surface.",
-                  tag: "#writing",
-                  author: "Priya S.",
-                  time: "4 min read",
-                },
-              ].map((post) => (
-                <div
-                  key={post.title}
-                  className="flex gap-4 pb-4 border-b border-border/30 last:border-0 last:pb-0"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-                        {post.author[0]}
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {post.author} · {post.time}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-sm leading-snug line-clamp-1">
-                      {post.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                    <span className="mt-1 inline-block text-[11px] text-violet-500 font-medium">
-                      {post.tag}
-                    </span>
-                  </div>
-                  <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-muted/60 to-muted flex-shrink-0 flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-muted-foreground/40" />
-                  </div>
+            <h1 className="serif text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-[-0.03em] text-[#efefef] mb-6">
+              Where ideas
+              <br />
+              find their
+              <br />
+              <em className="text-[#E8C97A] not-italic">readers.</em>
+            </h1>
+
+            <p className="text-lg text-[#888] leading-relaxed max-w-lg mb-10">
+              InkSpace is a focused writing platform for people with something to say.
+              Write beautifully, build a readership, and let AI do the heavy lifting.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 mb-16">
+              <button
+                onClick={() => openModal("register")}
+                className="inline-flex items-center gap-2 bg-[#E8C97A] hover:bg-[#dabb65] text-[#0c0c0c] font-semibold text-sm px-6 py-3 rounded transition-all duration-150 cursor-pointer"
+              >
+                Start writing — it&apos;s free
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => openModal("login")}
+                className="inline-flex items-center gap-2 text-sm text-[#aaa] hover:text-white border border-white/10 hover:border-white/20 px-5 py-3 rounded transition-all duration-150 cursor-pointer"
+              >
+                Sign in
+              </button>
+            </div>
+
+            {/* Stats row */}
+            <div className="flex items-center gap-8">
+              {STATS.map(({ value, label }, i) => (
+                <div key={i}>
+                  <p className="text-2xl font-bold text-[#efefef] tracking-tight">{value}</p>
+                  <p className="text-xs text-[#666] mt-0.5 uppercase tracking-widest">{label}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Glow under preview */}
-          <div
-            className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-24 blur-3xl rounded-full opacity-20"
-            style={{ background: "linear-gradient(to right, violet, purple, pink)" }}
-            aria-hidden
-          />
-        </div>
-      </section>
-
-      {/* ── Features ── */}
-      <section className="relative py-24 px-4 bg-muted/30">
-        {/* Section header */}
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <p className="text-sm font-semibold uppercase tracking-widest text-violet-500 mb-3">
-            Everything you need
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Built for writers, by writers
-          </h2>
-          <p className="mt-4 text-muted-foreground leading-relaxed">
-            InkSpace combines a beautiful editor with smart tools so you can
-            spend more time writing and less time on everything else.
-          </p>
-        </div>
-
-        {/* Feature grid */}
-        <div className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div
-              key={title}
-              className="group relative rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-violet-500/30"
-            >
-              {/* Icon */}
-              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/20 group-hover:from-violet-500/20 group-hover:to-purple-500/20 transition-all">
-                <Icon className="h-5 w-5 text-violet-500" />
-              </div>
-              <h3 className="font-semibold text-base mb-2">{title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-
-              {/* Subtle corner glow on hover */}
-              <div className="absolute top-0 right-0 h-24 w-24 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity"
-                style={{ background: "radial-gradient(circle, violet, transparent)" }}
-                aria-hidden
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── How it works ── */}
-      <section className="py-24 px-4">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <p className="text-sm font-semibold uppercase tracking-widest text-violet-500 mb-3">
-            Simple as ink
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Start publishing in minutes
-          </h2>
-        </div>
-
-        <div className="mx-auto max-w-3xl">
-          {[
-            {
-              step: "01",
-              title: "Create your account",
-              desc: "Sign up in seconds — no credit card required. Just your name and email.",
-            },
-            {
-              step: "02",
-              title: "Write your first story",
-              desc: "Open the editor, type your ideas, and format them with our clean, powerful toolbar.",
-            },
-            {
-              step: "03",
-              title: "Publish & grow",
-              desc: "Hit publish, add tags, and watch your story reach readers around the world.",
-            },
-          ].map(({ step, title, desc }, i) => (
-            <div key={step} className="flex gap-6 mb-10 last:mb-0">
-              {/* Step connector */}
-              <div className="flex flex-col items-center">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold text-sm shadow-lg shadow-violet-500/20">
-                  {step}
-                </div>
-                {i < 2 && (
-                  <div className="mt-2 w-px flex-1 bg-gradient-to-b from-violet-500/40 to-transparent" style={{ minHeight: 32 }} />
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="pb-6">
-                <h3 className="text-lg font-semibold mb-1">{title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section className="py-24 px-4 bg-muted/30">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <p className="text-sm font-semibold uppercase tracking-widest text-violet-500 mb-3">
-            Loved by writers
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            What our community says
-          </h2>
-        </div>
-
-        <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map(({ quote, author, role, initials }) => (
-            <div
-              key={author}
-              className="rounded-2xl border border-border/50 bg-card p-6 flex flex-col gap-4 hover:-translate-y-1 hover:shadow-xl hover:border-violet-500/20 transition-all duration-300"
-            >
-              {/* Stars */}
-              <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                &ldquo;{quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                  {initials}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">{author}</p>
-                  <p className="text-xs text-muted-foreground">{role}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Final CTA ── */}
-      <section className="relative py-28 px-4 text-center overflow-hidden">
-        {/* Background gradient */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, hsl(270 70% 60%), transparent 70%)",
-          }}
-          aria-hidden
-        />
-
-        <div className="relative max-w-2xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            Ready to share your story?
-          </h2>
-          <p className="mt-5 text-lg text-muted-foreground">
-            Join InkSpace today — it&apos;s completely free.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="h-12 px-10 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.03] transition-all"
+          {/* Right: editorial article card column */}
+          <div className="hidden lg:flex flex-col gap-3">
+            {/* Masthead label */}
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-medium mb-1">
+              Latest from InkSpace
+            </p>
+            {[
+              {
+                tag: "Philosophy",
+                title: "The quiet discipline of writing every day",
+                author: "Marcus T.",
+                min: "5 min",
+              },
+              {
+                tag: "Technology",
+                title: "How AI is reshaping the craft of longform writing",
+                author: "Aiko W.",
+                min: "8 min",
+              },
+              {
+                tag: "Culture",
+                title: "Why newsletters are the new midnight radio",
+                author: "Priya S.",
+                min: "4 min",
+              },
+            ].map((article, i) => (
+              <div
+                key={i}
+                className="border border-white/7 bg-[#131313] p-4 rounded-sm cursor-pointer group hover:border-white/12 hover:bg-[#161616] transition-all duration-150"
               >
-                Create your account
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 px-10 text-base font-semibold hover:scale-[1.03] transition-all"
-              >
-                Already have an account?
-              </Button>
-            </Link>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-[#E8C97A] font-semibold">
+                  {article.tag}
+                </span>
+                <h3 className="text-sm font-semibold text-[#ddd] mt-1.5 mb-2 leading-snug group-hover:text-white transition-colors">
+                  {article.title}
+                </h3>
+                <div className="flex items-center gap-2 text-[11px] text-[#555]">
+                  <span>{article.author}</span>
+                  <span>·</span>
+                  <span>{article.min} read</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* ── Divider ── */}
+      <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20">
+        <div className="border-t border-white/7" />
+      </div>
+
+      {/* ── Features — editorial list layout ── */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-0">
+          {/* Section label */}
+          <div className="md:col-span-2 mb-12">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-semibold">
+              Platform features
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#efefef] mt-2">
+              Built for the act of writing.
+            </h2>
+          </div>
+
+          {FEATURES.map(({ icon: Icon, title, description }, i) => (
+            <div
+              key={i}
+              className="flex gap-5 py-7 border-t border-white/7 group"
+            >
+              <div className="mt-0.5 shrink-0 w-7 h-7 flex items-center justify-center text-[#E8C97A]">
+                <Icon className="h-5 w-5" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-[#efefef] mb-1.5">{title}</h3>
+                <p className="text-sm text-[#666] leading-relaxed">{description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Divider ── */}
+      <div className="max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-20">
+        <div className="border-t border-white/7" />
+      </div>
+
+      {/* ── Testimonials — asymmetric staggered ── */}
+      <section className="py-20 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto w-full">
+        <div className="mb-12">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-semibold">
+            From the community
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#efefef] mt-2">
+            Writers who found their voice.
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map(({ quote, author, role, initials }, i) => (
+            <div
+              key={i}
+              className={`bg-[#131313] border border-white/7 p-7 rounded-sm ${i === 1 ? "md:mt-8" : ""}`}
+            >
+              {/* Pull-quote mark */}
+              <div className="text-4xl text-[#E8C97A]/30 font-serif leading-none mb-4 select-none">&ldquo;</div>
+              <p className="text-[#aaa] text-sm leading-relaxed mb-6 italic">{quote}</p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-sm bg-[#E8C97A]/10 border border-[#E8C97A]/20 flex items-center justify-center text-[#E8C97A] text-xs font-bold">
+                  {initials}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#ddd]">{author}</p>
+                  <p className="text-[11px] text-[#555]">{role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA section ── */}
+      <section className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto w-full">
+        <div className="border border-[#E8C97A]/20 bg-[#E8C97A]/[0.03] rounded-sm p-10 md:p-16 text-center">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#E8C97A]/60 font-semibold">
+            Begin today
+          </span>
+          <h2 className="serif text-4xl md:text-5xl font-bold tracking-tight text-[#efefef] mt-4 mb-4">
+            Your ideas deserve readers.
+          </h2>
+          <p className="text-[#777] text-base max-w-md mx-auto mb-10 leading-relaxed">
+            Join thousands of writers who publish on InkSpace every day. Free to start, forever.
+          </p>
+          <button
+            onClick={() => openModal("register")}
+            className="inline-flex items-center gap-2 bg-[#E8C97A] hover:bg-[#dabb65] text-[#0c0c0c] font-bold text-sm px-8 py-3.5 rounded transition-all duration-150 cursor-pointer"
+          >
+            Create your free account
+            <ArrowUpRight className="h-4 w-4" />
+          </button>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-white/5 px-6 md:px-12 lg:px-20 py-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="text-[#E8C97A] font-bold">Ink</span>
+            <span className="text-[#efefef] font-bold">Space</span>
+          </div>
+          <p className="text-[11px] text-[#444]">
+            © {new Date().getFullYear()} InkSpace. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

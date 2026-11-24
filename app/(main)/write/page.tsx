@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Send, Save, Sparkles } from "lucide-react";
 import { createPost } from "@/actions/post.actions";
 import { generateSummary } from "@/actions/ai.actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { toast } from "sonner";
 
 /**
@@ -63,7 +64,8 @@ export default function WritePage() {
           toast.error(result.error);
         }
         // Redirects to post page on success
-      } catch {
+      } catch (err) {
+        if (isRedirectError(err)) throw err;
         toast.error("Failed to publish post");
       }
     });
@@ -83,7 +85,8 @@ export default function WritePage() {
           toast.error(result.error);
         }
         // Redirects to post page on success
-      } catch {
+      } catch (err) {
+        if (isRedirectError(err)) throw err;
         toast.error("Failed to save draft");
       }
     });

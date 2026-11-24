@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { AuthModalProvider } from "@/components/providers/AuthModalProvider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -15,15 +17,9 @@ export const metadata: Metadata = {
     template: "%s | InkSpace",
   },
   description:
-    "InkSpace is a modern blogging platform where writers share stories, ideas, and knowledge with an engaged community.",
+    "InkSpace is a focused writing platform where writers share stories, ideas, and knowledge with an engaged community.",
 };
 
-/**
- * Root layout — wraps the entire app with:
- *   - Inter font
- *   - NextAuth SessionProvider (client-side session context)
- *   - Sonner toast notifications
- */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,8 +29,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
         <SessionProvider>
-          {children}
-          <Toaster richColors position="bottom-right" />
+          <AuthModalProvider>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </AuthModalProvider>
         </SessionProvider>
       </body>
     </html>

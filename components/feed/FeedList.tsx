@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { PostCard } from "@/components/post/PostCard";
 import { FeedTabs } from "@/components/feed/FeedTabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import type { PostCard as PostCardType } from "@/types";
 
@@ -77,29 +76,25 @@ export function FeedList() {
       <FeedTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
       {isLoading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/60 bg-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Skeleton className="h-8 w-8 rounded-full" />
+        <div className="space-y-1 divide-y divide-white/8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="py-5">
+              <div className="flex items-center gap-2.5 mb-3">
+                <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
                 <div className="space-y-1.5">
-                  <Skeleton className="h-3.5 w-24" />
-                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3.5 w-24 bg-white/10" />
+                  <Skeleton className="h-3 w-16 bg-white/5" />
                 </div>
               </div>
-              <Skeleton className="h-5 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-2/3 mb-4" />
-              <div className="flex gap-2">
-                <Skeleton className="h-5 w-14 rounded-full" />
-                <Skeleton className="h-5 w-14 rounded-full" />
-              </div>
+              <Skeleton className="h-4 w-3/4 mb-2 bg-white/10" />
+              <Skeleton className="h-3.5 w-full mb-1 bg-white/5" />
+              <Skeleton className="h-3.5 w-2/3 bg-white/5" />
             </div>
           ))}
         </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-lg font-medium text-muted-foreground">
+          <p className="text-base text-[#666]">
             {activeTab === "following"
               ? "Follow some users to see their posts here."
               : "No posts yet. Be the first to write!"}
@@ -107,29 +102,28 @@ export function FeedList() {
         </div>
       ) : (
         <>
-          <div className="space-y-4">
+          <div>
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
 
           {hasMore && (
-            <div className="flex justify-center pt-4">
-              <Button
-                variant="outline"
+            <div className="flex justify-center pt-6">
+              <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="min-w-[140px]"
+                className="flex items-center gap-2 text-sm text-[#888] hover:text-white border border-white/10 hover:border-white/20 rounded-full px-6 py-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isLoadingMore ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Loading...
                   </>
                 ) : (
                   "Load more"
                 )}
-              </Button>
+              </button>
             </div>
           )}
         </>

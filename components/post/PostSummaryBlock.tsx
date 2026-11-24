@@ -6,18 +6,16 @@ interface PostSummaryBlockProps {
   summary: string;
 }
 
-/**
- * Displays an AI-generated summary in a styled callout block.
- * Shown on the single post view and in the post editor after generation.
- */
 export function PostSummaryBlock({ summary }: PostSummaryBlockProps) {
   return (
-    <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
+    <div className="border-l-2 border-[#E8C97A] pl-5 py-3 bg-[#E8C97A]/[0.04] rounded-r-sm">
       <div className="flex items-center gap-2 mb-2">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold text-primary">AI Summary</span>
+        <Sparkles className="h-3.5 w-3.5 text-[#E8C97A]" strokeWidth={1.5} />
+        <span className="text-xs font-semibold text-[#E8C97A] uppercase tracking-widest">
+          AI Summary
+        </span>
       </div>
-      <p className="text-sm leading-relaxed text-foreground/80">{summary}</p>
+      <p className="text-sm leading-relaxed text-[#999]">{summary}</p>
     </div>
   );
 }

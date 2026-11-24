@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
 import { UserPlus, UserCheck, Loader2 } from "lucide-react";
 import { toggleFollow } from "@/actions/user.actions";
 import { cn } from "@/lib/utils";
@@ -12,10 +11,6 @@ interface FollowButtonProps {
   className?: string;
 }
 
-/**
- * Optimistic follow/unfollow toggle button.
- * Shows different states: Follow, Following (with hover to Unfollow), and loading.
- */
 export function FollowButton({
   targetUserId,
   isFollowing: initialIsFollowing,
@@ -26,13 +21,11 @@ export function FollowButton({
   const [isPending, startTransition] = useTransition();
 
   function handleClick() {
-    // Optimistic update
     setIsFollowing((prev) => !prev);
 
     startTransition(async () => {
       const result = await toggleFollow(targetUserId);
       if ("error" in result) {
-        // Revert on error
         setIsFollowing((prev) => !prev);
       } else {
         setIsFollowing(result.following);
@@ -41,41 +34,43 @@ export function FollowButton({
   }
 
   return (
-    <Button
-      size="sm"
-      variant={isFollowing ? "outline" : "default"}
+    <button
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={isPending}
       className={cn(
-        "min-w-[100px] gap-1.5 transition-all",
-        isFollowing && isHovered && "border-destructive/50 text-destructive hover:bg-destructive/5",
+        "inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded transition-all duration-150 cursor-pointer disabled:opacity-50",
+        isFollowing
+          ? isHovered
+            ? "border border-red-500/40 text-red-400 bg-red-500/5 hover:bg-red-500/10"
+            : "border border-white/10 text-[#aaa] bg-transparent hover:border-white/20"
+          : "bg-[#E8C97A] text-[#0c0c0c] hover:bg-[#dabb65] border border-transparent",
         className
       )}
     >
       {isPending ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <Loader2 className="h-3 w-3 animate-spin" />
       ) : isFollowing ? (
         <>
           {isHovered ? (
             <>
-              <UserPlus className="h-3.5 w-3.5" />
+              <UserPlus className="h-3 w-3" />
               Unfollow
             </>
           ) : (
             <>
-              <UserCheck className="h-3.5 w-3.5" />
+              <UserCheck className="h-3 w-3" />
               Following
             </>
           )}
         </>
       ) : (
         <>
-          <UserPlus className="h-3.5 w-3.5" />
+          <UserPlus className="h-3 w-3" />
           Follow
         </>
       )}
-    </Button>
+    </button>
   );
 }
